@@ -1,0 +1,76 @@
+---
+title: "Week 4 homework-MSDS6306"
+author: "Karen Clark"
+date: "May 29, 2016"
+output:
+   html_document:
+    toc: true
+    number_sections: true
+---
+The Central Limit Theorem (CLT) states that, given certain conditions you can expect the arthimetic mean of a large number of iterations of independent variables and well-definted expected values and variances, will be fairly normally distributed regardless of the underlying distribution.
+
+This assignment was to prove the theorem by taking two samples of differing sample sizes to test this. Basically the CLT states that as the number of samples increase for any given population, the distrbution of the averages for those samples will move closer to a normally distributed.
+
+To test the CLT theorem I have two random datasets.  One has a sample size of 10
+ and the other is a sample size of 75.  Each data set was created using the bootstrap methodolgy of looping to replicate the random sampling.  
+ 
+ Code used:
+ 
+ ```{r, echo=FALSE}
+ ##Define two rnorm samples of differing sample sizes
+Sample1 <- rnorm(10, 0, 4)  #small sample size
+Sample2 <- rnorm(75, 0, 4) #large sample size
+
+##Define two rexp samples of differing sample sizes
+Exp1 <- rexp(10)  #small sample size
+Exp2 <- rexp(75) #large sample size
+
+##Define a vector to house the 1000 samples for each
+bootSamp1mean <- numeric(1000)
+bootSampl2mean <- numeric(1000)
+bootExp1mean <- numeric(1000)
+bootExp2mean <- numeric(1000)
+
+##bootstrap loop to define means of 1000 samples from the original datasets.
+##Samples are chosen randomly with replacement
+for (i in 1:1000) {
+bootSamp1 <- sample(Sample1, size=length(Sample1), replace=TRUE)
+bootSampl2 <- sample(Sample2, size=length(Sample2), replace=TRUE)
+
+Exp1Boot <- sample(Sample1, size=length(Exp1), replace=TRUE)
+Exp2Boot <- sample(Sample2, size=length(Exp2), replace=TRUE)
+
+bootSamp1mean[i] <- mean(bootSamp1)
+bootSampl2mean[i] <- mean(bootSampl2)
+
+bootExp1mean[i] <- mean(Exp1Boot)
+bootExp2mean[i] <- mean(Exp2Boot)
+}
+```
+
+Below are the histograms:
+
+
+``` {r, echo=FALSE}
+par(mfrow=c(2,2))
+hist(Sample1, main = "RNORM - Original Sample Size 10")
+hist(bootSamp1mean, main = "RNORM - BootStrap Sample Size 10")
+
+hist(Sample2, main = "RNORM - Original Sample Size 75")
+hist(bootSampl2mean, main = "RNORM - BootStrap Sample Size 75")
+```
+
+The original datasets seemed do not appear to be normally distributed and are hard to evaluate. When the datasets are then processed through the bootstrap methodolgy for a 1000 iterations, and  the averages are evaluated from these samples, it does appearthat the datasets are distributed normally.
+
+The next step is to look at the exponentially distrubted datasets to see if the histogram follows the same pattern as seen above.
+
+```{r, echo=FALSE}
+par(mfrow=c(2,2))
+hist(Exp1, main = "REXP - Original  Sample Size 10")
+hist(bootExp1mean, main = "REXP - BootStrap Sample Size 10")
+
+hist(Exp2, main = "REXP - Original Sample Size 75")
+hist(bootExp2mean, main = "REXP - BootStrap Sample Size 75")
+```
+
+The original exponential datasets are left skewed and are not normally distributed.  Once the datasets are processed using the bootstrap methodolgy the datasets again are normally distributed.
